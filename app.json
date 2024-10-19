@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "eco-trade",
+    "name": "Eco Trade",
     "slug": "eco-trade",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "eco-trade",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
