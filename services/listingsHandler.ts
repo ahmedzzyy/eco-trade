@@ -84,18 +84,27 @@ export const fetchListingById = async (listingId: string) => {
     }
 };
 
-// Fetch multiple listings (with optional filters)
-export const fetchListings = async (userId?: string) => {
+// Fetch multiple available listings (with optional filters)
+export const fetchListings = async (userId?: string, category?: string) => {
     const db = getFirestore();
     let listingsQuery;
 
     try {
-        // Query listings, optionally filter by userId
+        // Start with the base collection query
+        listingsQuery = collection(db, 'listings');
+
+        // Create an array to hold where clauses
+        const filters: any[] = [];
+
+        // Add filters based on parameters
         if (userId) {
-            listingsQuery = query(collection(db, 'listings'), where('userId', '==', userId));
-        } else {
-            listingsQuery = query(collection(db, 'listings'));
+            filters.push(where('sellerID', '==', doc(db, 'users', userId)));
         }
+        if (category) {
+            filters.push(where('category', '==', category));
+        }
+        filters.push(where('isAvailable', '==', true));
+        
 
         const querySnapshot = await getDocs(listingsQuery);
         const listings = querySnapshot.docs.map(doc => doc.data());
