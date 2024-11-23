@@ -15,7 +15,7 @@ data class User (
     val email: String,
 
     @Column(nullable = false)
-    val password: String, // To be encrypted later
+    val password: String,
 
     val location: String? = null,
 
