@@ -34,4 +34,8 @@ class UserService(
                 IllegalArgumentException("User Not Found")
             })
     }
+
+    fun findByEmail(email: String): Optional<User> {
+        return userRepository.findByEmail(email)
+    }
 }
