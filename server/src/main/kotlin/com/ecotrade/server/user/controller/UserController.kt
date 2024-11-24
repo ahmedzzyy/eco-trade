@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RestController
 class UserController(private val userService: UserService) {
 
     @GetMapping("/{id}")
-    fun getUser(@PathVariable id: Long): ResponseEntity<User> {
+    fun getCurrentUser(@PathVariable id: Long): ResponseEntity<PrivateProfileDTO> {
+        val currentUserEmail = SecurityContextHolder.getContext().authentication.principal as String
+
         val user = userService.getUserById(id)
 
         if (user.email != currentUserEmail) {
@@ -30,5 +32,18 @@ class UserController(private val userService: UserService) {
         )
 
         return ResponseEntity.ok(privateUserDTO)
+    }
+
+    @GetMapping("/{id}/public")
+    fun getPublicUser(@PathVariable id: Long): ResponseEntity<PublicProfileDTO> {
+        val user = userService.getUserById(id)
+
+        val publicUserDTO = PublicProfileDTO(
+            user.id,
+            user.email,
+            user.profilePicture
+        )
+
+        return ResponseEntity.ok(publicUserDTO)
     }
 }
