@@ -20,6 +20,7 @@ class UserService(
         val password = passwordEncoder.encode(user.password)
         val newUser = User(
             email = user.email,
+            username = user.username,
             password = password,
             location = user.location,
             profilePicture = user.profilePicture

@@ -27,6 +27,7 @@ class UserController(private val userService: UserService) {
 
         val privateUserDTO = PrivateProfileDTO(
             user.id,
+            user.username,
             user.email,
             user.location,
             user.profilePicture,
@@ -42,6 +43,7 @@ class UserController(private val userService: UserService) {
         val publicUserDTO = PublicProfileDTO(
             user.id,
             user.email,
+            user.username,
             user.profilePicture
         )
 

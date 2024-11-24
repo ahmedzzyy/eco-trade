@@ -17,6 +17,9 @@ data class User (
     @Column(nullable = false)
     val password: String,
 
+    @Column(nullable = false)
+    val username: String,
+
     val location: String? = null,
 
     val profilePicture: String? = null
