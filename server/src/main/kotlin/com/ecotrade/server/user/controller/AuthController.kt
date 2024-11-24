@@ -1,7 +1,9 @@
 package com.ecotrade.server.user.controller
 
 import com.ecotrade.server.security.JwtUtil
+import com.ecotrade.server.user.model.entity.User
 import com.ecotrade.server.user.service.UserService
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -18,6 +20,12 @@ class AuthController(
     private val jwtUtil: JwtUtil,
     private val passwordEncoder: PasswordEncoder
 ) {
+
+    @PostMapping("/register")
+    fun registerUser(@RequestBody @Valid user: User): ResponseEntity<Void> {
+        val registeredUser = userService.registerUser(user)
+        return ResponseEntity.ok().build()
+    }
 
     @PostMapping("/login")
     fun login(@RequestBody loginRequest: LoginRequest): ResponseEntity<Map<String, String>> {
