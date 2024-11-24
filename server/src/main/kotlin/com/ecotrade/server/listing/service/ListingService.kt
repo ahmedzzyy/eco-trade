@@ -3,6 +3,8 @@ package com.ecotrade.server.listing.service
 import com.ecotrade.server.listing.dto.ListingRequest
 import com.ecotrade.server.listing.model.Listing
 import com.ecotrade.server.listing.repository.ListingRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 
 @Service
@@ -17,12 +19,8 @@ class ListingService(private val listingRepository: ListingRepository) {
             .orElseThrow { RuntimeException("Listing not found!") }
     }
 
-    fun getAllListings(): List<Listing> {
-        return listingRepository.findAll()
-    }
-
-    fun getListingsByCategory(category: String): List<Listing> {
-        return listingRepository.findByCategory(category)
+    fun getAllListings(pageable: Pageable): Page<Listing> {
+        return listingRepository.getAll(pageable)
     }
 
     fun updateListing(id: Long, listingRequest: ListingRequest, currentUserEmail: String): Listing {
