@@ -1,6 +1,7 @@
 package com.ecotrade.server.user.controller
 
 import com.ecotrade.server.user.dto.PrivateProfileDTO
+import com.ecotrade.server.user.dto.PublicProfileDTO
 import com.ecotrade.server.user.service.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
