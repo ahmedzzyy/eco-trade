@@ -46,6 +46,6 @@ class JwtUtil {
     }
 
     fun extractUsername(token: String): String {
-        return getClaims(token)["username"] as String
+        return getClaims(token).subject
     }
 }
