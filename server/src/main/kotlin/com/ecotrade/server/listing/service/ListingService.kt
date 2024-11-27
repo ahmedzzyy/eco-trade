@@ -1,5 +1,7 @@
 package com.ecotrade.server.listing.service
 
+import com.ecotrade.server.elasticsearch.ListingDocument
+import com.ecotrade.server.elasticsearch.ListingSearchService
 import com.ecotrade.server.listing.dto.ListingRequest
 import com.ecotrade.server.listing.model.Listing
 import com.ecotrade.server.listing.repository.ListingRepository
@@ -8,10 +10,16 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 
 @Service
-class ListingService(private val listingRepository: ListingRepository) {
+class ListingService(
+    private val listingRepository: ListingRepository,
+    private val listingSearchService: ListingSearchService
+) {
 
     fun createListing(listing: Listing): Listing {
-        return listingRepository.save(listing)
+        val savedListing =  listingRepository.save(listing)
+        listingSearchService.indexListing(savedListing)
+
+        return savedListing
     }
 
     fun getListingById(id: Long): Listing {
@@ -40,6 +48,8 @@ class ListingService(private val listingRepository: ListingRepository) {
             images = listingRequest.images
         )
 
+        listingSearchService.updateListing(updatedListing)
+
         return listingRepository.save(updatedListing)
     }
 
@@ -52,5 +62,24 @@ class ListingService(private val listingRepository: ListingRepository) {
         }
 
         listingRepository.delete(listing)
+        listingSearchService.deleteListing(id)
+    }
+
+    fun searchListingsByFilters(
+        keywords: String,
+        minPrice: Double?,
+        maxPrice: Double?,
+        category: String?,
+        minSustainabilityScore: Int?,
+        pageable: Pageable
+    ): Page<ListingDocument> {
+        return listingSearchService.searchListingsByFilters(
+            keywords,
+            minPrice,
+            maxPrice,
+            category,
+            minSustainabilityScore,
+            pageable
+        )
     }
 }
