@@ -1,8 +1,19 @@
 package com.ecotrade.server.elasticsearch
 
 import com.ecotrade.server.listing.model.Listing
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.elasticsearch.client.elc.NativeQuery
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations
+import org.springframework.data.elasticsearch.core.SearchHitSupport
+import org.springframework.data.elasticsearch.core.SearchHits
+import org.springframework.data.elasticsearch.core.SearchPage
+import org.springframework.data.elasticsearch.core.search
 
-class ListingSearchService(private val listingSearchRepository: ListingSearchRepository) {
+class ListingSearchService(
+    private val listingSearchRepository: ListingSearchRepository,
+    private val operations: ElasticsearchOperations
+) {
 
     fun indexListing(listing: Listing) {
         val document = ListingDocument(
@@ -19,5 +30,56 @@ class ListingSearchService(private val listingSearchRepository: ListingSearchRep
 
     fun deleteListing(id: Long) {
         listingSearchRepository.deleteById(id)
+    }
+
+    fun searchListingsByFilters(
+        keywords: String,
+        minPrice: Double?,
+        maxPrice: Double?,
+        category: String?,
+        minSustainabilityScore: Int?,
+        pageable: Pageable
+    ): Page<ListingDocument> {
+        val queryBuilder = NativeQuery.builder()
+            .withQuery { q ->
+                q.match { m -> m.field("title").query(keywords) }
+            }
+            .apply {
+                if (category != null) {
+                    withQuery { q ->
+                        q.term { t ->
+                            t.field("category").value(category)
+                        }
+                    }
+                }
+                if (maxPrice != null || minPrice != null) {
+                    withQuery { q ->
+                        q.range { r ->
+                            r.number { n ->
+                                n.field("price")
+                                    .gte(minPrice)
+                                    .lte(maxPrice)
+                            }
+                        }
+                    }
+                }
+                if (minSustainabilityScore != null) {
+                    withQuery { q ->
+                        q.range { r ->
+                            r.number { n ->
+                                n.field("sustainabilityScore")
+                                    .gte(minSustainabilityScore.toDouble())
+                            }
+                        }
+                    }
+                }
+            }
+            .withPageable(pageable)
+            .build()
+
+        val searchHits: SearchHits<ListingDocument> = operations.search(queryBuilder)
+        val searchPage: SearchPage<ListingDocument> = SearchHitSupport.searchPageFor(searchHits, pageable)
+
+        return searchPage.map { it.content }
     }
 }
