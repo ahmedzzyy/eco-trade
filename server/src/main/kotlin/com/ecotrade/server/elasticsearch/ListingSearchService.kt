@@ -28,6 +28,19 @@ class ListingSearchService(
         listingSearchRepository.save(document)
     }
 
+    fun updateListing(listing: Listing) {
+        val document = ListingDocument(
+            listing.id,
+            listing.title,
+            listing.description,
+            listing.price,
+            listing.category,
+            listing.sustainabilityScore
+        )
+
+        listingSearchRepository.save(document)
+    }
+
     fun deleteListing(id: Long) {
         listingSearchRepository.deleteById(id)
     }
