@@ -10,3 +10,6 @@ spring:
     hibernate:
       ddl-auto: create
     show-sql: true
+  elasticsearch:
+    username: ${ELASTIC_USERNAME}
+    password: ${ELASTIC_PASSWORD}
