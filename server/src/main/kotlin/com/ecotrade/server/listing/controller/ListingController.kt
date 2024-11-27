@@ -1,5 +1,6 @@
 package com.ecotrade.server.listing.controller
 
+import com.ecotrade.server.elasticsearch.ListingDocument
 import com.ecotrade.server.listing.dto.ListingRequest
 import com.ecotrade.server.listing.model.Listing
 import com.ecotrade.server.listing.service.ListingService
@@ -41,6 +42,27 @@ class ListingController(
     fun getListingById(@PathVariable id: Long): ResponseEntity<Listing> {
         val listing = listingService.getListingById(id)
         return ResponseEntity.ok(listing)
+    }
+
+    @GetMapping("/search")
+    fun searchListings(
+        @RequestParam keywords: String,
+        @RequestParam(required = false) minPrice: Double?,
+        @RequestParam(required = false) maxPrice: Double?,
+        @RequestParam(required = false) category: String?,
+        @RequestParam(required = false) minSustainabilityScore: Int?,
+        @PageableDefault pageable: Pageable
+    ): ResponseEntity<Page<ListingDocument>> {
+        val searchResults = listingService.searchListingsByFilters(
+            keywords,
+            minPrice,
+            maxPrice,
+            category,
+            minSustainabilityScore,
+            pageable
+        )
+
+        return ResponseEntity.ok(searchResults)
     }
 
     @PutMapping("/{id}")
