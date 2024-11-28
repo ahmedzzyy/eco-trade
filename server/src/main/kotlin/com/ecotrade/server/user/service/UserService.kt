@@ -1,6 +1,6 @@
 package com.ecotrade.server.user.service
 
-import com.ecotrade.server.user.model.entity.User
+import com.ecotrade.server.user.model.User
 import com.ecotrade.server.user.repository.UserRepository
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -20,6 +20,7 @@ class UserService(
         val password = passwordEncoder.encode(user.password)
         val newUser = User(
             email = user.email,
+            username = user.username,
             password = password,
             location = user.location,
             profilePicture = user.profilePicture

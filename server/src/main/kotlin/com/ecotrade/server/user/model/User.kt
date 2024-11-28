@@ -1,4 +1,4 @@
-package com.ecotrade.server.user.model.entity
+package com.ecotrade.server.user.model
 
 import jakarta.persistence.*
 import jakarta.validation.constraints.Email
@@ -16,6 +16,9 @@ data class User (
 
     @Column(nullable = false)
     val password: String,
+
+    @Column(nullable = false)
+    val username: String,
 
     val location: String? = null,
 

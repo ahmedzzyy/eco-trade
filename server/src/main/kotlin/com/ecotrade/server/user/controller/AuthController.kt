@@ -1,7 +1,7 @@
 package com.ecotrade.server.user.controller
 
 import com.ecotrade.server.security.JwtUtil
-import com.ecotrade.server.user.model.entity.User
+import com.ecotrade.server.user.model.User
 import com.ecotrade.server.user.service.UserService
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
