@@ -28,7 +28,7 @@ class ListingService(
     }
 
     fun getAllListings(pageable: Pageable): Page<Listing> {
-        return listingRepository.getAll(pageable)
+        return listingRepository.findAll(pageable)
     }
 
     fun updateListing(id: Long, listingRequest: ListingRequest, currentUserEmail: String): Listing {
