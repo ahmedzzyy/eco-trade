@@ -9,7 +9,9 @@ import org.springframework.data.elasticsearch.core.SearchHitSupport
 import org.springframework.data.elasticsearch.core.SearchHits
 import org.springframework.data.elasticsearch.core.SearchPage
 import org.springframework.data.elasticsearch.core.search
+import org.springframework.stereotype.Service
 
+@Service
 class ListingSearchService(
     private val listingSearchRepository: ListingSearchRepository,
     private val operations: ElasticsearchOperations

@@ -13,3 +13,10 @@ spring:
   elasticsearch:
     username: ${ELASTIC_USERNAME}
     password: ${ELASTIC_PASSWORD}
+    uris: [https://localhost:9200]
+  data:
+    elasticsearch:
+      cluster-name: elasticsearch
+      cluster-nodes: localhost:9200
+      repositories:
+        enabled: true
