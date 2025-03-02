@@ -5,25 +5,40 @@ import org.apache.http.ssl.SSLContextBuilder
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.elasticsearch.client.ClientConfiguration
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchConfiguration
+import java.io.File
 import javax.net.ssl.SSLContext
 
 @Configuration
 class ElasticConfig: ElasticsearchConfiguration() {
 
     override fun clientConfiguration(): ClientConfiguration {
+        // DEV: ENV variables
+        val elasticUsername = System.getenv("ELASTIC_USERNAME")
+        val elasticPassword = System.getenv("ELASTIC_PASSWORD")
+
+        // PROD: Implement `fetchFromSecretsManager`
+//        val elasticUsername = fetchFromSecretsManager("ELASTIC_USERNAME")
+//        val elasticPassword = fetchFromSecretsManager("ELASTIC_PASSWORD")
+
         return ClientConfiguration.builder()
-            .connectedToLocalhost() // Currently Localhost
+            // DEV
+            .connectedToLocalhost()
+            // PROD
+//            .connectedTo("<elasticsearch-host-change_me>:9200")
             .usingSsl(buildSSLContext())
-            .withBasicAuth(
-                System.getenv("ELASTIC_USERNAME"),
-                System.getenv("ELASTIC_PASSWORD")
-            ).build()
+            .withBasicAuth(elasticUsername, elasticPassword).build()
     }
 
     private fun buildSSLContext(): SSLContext {
-
         try {
-            return SSLContextBuilder().loadTrustMaterial(null,TrustAllStrategy.INSTANCE)
+            return SSLContextBuilder()
+                // DEV
+                .loadTrustMaterial(null,TrustAllStrategy.INSTANCE)
+                // PROD
+//                .loadTrustMaterial(
+//                    File("path/to/change_me/truststore.jks"),
+//                    "truststore-password".toCharArray()
+//                )
                 .build()
         } catch (e: Exception) { throw RuntimeException(e) }
     }
