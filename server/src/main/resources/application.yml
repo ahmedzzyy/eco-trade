@@ -2,7 +2,7 @@ spring:
   application:
     name: Eco Trade
   datasource:
-    url: jdbc:postgresql://localhost:5432/ecotrade
+    url: jdbc:postgresql://localhost:5432/eco_trade
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
@@ -10,13 +10,3 @@ spring:
     hibernate:
       ddl-auto: create
     show-sql: true
-  elasticsearch:
-    username: ${ELASTIC_USERNAME}
-    password: ${ELASTIC_PASSWORD}
-    uris: [https://localhost:9200]
-  data:
-    elasticsearch:
-      cluster-name: elasticsearch
-      cluster-nodes: localhost:9200
-      repositories:
-        enabled: true
