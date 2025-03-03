@@ -9,22 +9,49 @@ import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 
 @Component
-class JwtFilter(private val jwtUtil: JwtUtil): OncePerRequestFilter() {
+class JwtFilter(private val jwtUtil: JwtUtil) : OncePerRequestFilter() {
 
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        val token = getTokenFromRequest(request)
+        try {
+            val requestURI = request.requestURI
 
-        if (token != null && jwtUtil.validateToken(token)) {
-            val userName = jwtUtil.extractUsername(token)
+            // Skip JWT filter for public endpoints
+            if (requestURI.startsWith("/api/auth/")) {
+                filterChain.doFilter(request, response)
+                return
+            }
 
-            val authentication = JwtAuthentication(userName)
-            authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
+            val token = getTokenFromRequest(request)
 
-            SecurityContextHolder.getContext().authentication = authentication
+            if (token == null) {
+                sendJSONErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Missing Authentication Token")
+                return
+            }
+
+            if (jwtUtil.validateToken(token)) {
+                val userName = jwtUtil.extractUsername(token)
+
+                val authentication = JwtAuthentication(userName)
+                authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
+
+                SecurityContextHolder.getContext().authentication = authentication
+            } else {
+                sendJSONErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT Token")
+                return
+            }
+        } catch (e: io.jsonwebtoken.ExpiredJwtException) {
+            sendJSONErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Token Expired")
+            return
+        } catch (e: io.jsonwebtoken.JwtException) {
+            sendJSONErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid Token")
+            return
+        } catch (e: Exception) {
+            sendJSONErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Authentication Failed.")
+            return
         }
 
         filterChain.doFilter(request, response)
@@ -38,5 +65,12 @@ class JwtFilter(private val jwtUtil: JwtUtil): OncePerRequestFilter() {
         }
 
         return null
+    }
+
+    fun sendJSONErrorResponse(response: HttpServletResponse, status: Int, message: String) {
+        response.contentType = "application/json"
+        response.status = status
+        response.writer.write("""{"error": "$message"}""")
+        response.writer.flush()
     }
 }
