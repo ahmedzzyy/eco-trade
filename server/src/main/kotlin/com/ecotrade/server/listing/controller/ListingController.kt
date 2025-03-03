@@ -6,7 +6,6 @@ import com.ecotrade.server.listing.dto.ListingRequest
 import com.ecotrade.server.listing.dto.ListingResponse
 import com.ecotrade.server.listing.service.ListingService
 import com.ecotrade.server.user.service.UserService
-import jakarta.persistence.EntityNotFoundException
 import jakarta.validation.Valid
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
