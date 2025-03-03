@@ -31,9 +31,9 @@ class UserService(
 
     fun getUserById(id: Long): User {
         return userRepository.findById(id)
-            .orElseThrow({
+            .orElseThrow {
                 IllegalArgumentException("User Not Found")
-            })
+            }
     }
 
     fun findByEmail(email: String): Optional<User> {
