@@ -2,9 +2,11 @@ package com.ecotrade.server.listing.service
 
 import com.ecotrade.server.elasticsearch.ListingDocument
 import com.ecotrade.server.elasticsearch.ListingSearchService
+import com.ecotrade.server.exception.UnauthorizedAccessException
 import com.ecotrade.server.listing.dto.ListingRequest
 import com.ecotrade.server.listing.model.Listing
 import com.ecotrade.server.listing.repository.ListingRepository
+import jakarta.persistence.EntityNotFoundException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -24,7 +26,7 @@ class ListingService(
 
     fun getListingById(id: Long): Listing {
         return listingRepository.findById(id)
-            .orElseThrow { RuntimeException("Listing not found!") }
+            .orElseThrow { EntityNotFoundException("Listing not found!") }
     }
 
     fun getAllListings(pageable: Pageable): Page<Listing> {
@@ -33,10 +35,10 @@ class ListingService(
 
     fun updateListing(id: Long, listingRequest: ListingRequest, currentUserEmail: String): Listing {
         val listing = listingRepository.findById(id)
-            .orElseThrow { RuntimeException("Listing not found!") }
+            .orElseThrow { EntityNotFoundException("Listing not found!") }
 
         if (listing.user.email != currentUserEmail) {
-            throw RuntimeException("Unauthorized to update the listing.")
+            throw UnauthorizedAccessException("You are not authorized to update this listing.")
         }
 
         val updatedListing = listing.copy(
@@ -55,10 +57,10 @@ class ListingService(
 
     fun deleteListing(id: Long, currentUserEmail: String) {
         val listing = listingRepository.findById(id)
-            .orElseThrow { RuntimeException("Listing not found!") }
+            .orElseThrow { EntityNotFoundException("Listing not found!") }
 
         if (listing.user.email != currentUserEmail) {
-            throw RuntimeException("Unauthorized to update the listing.")
+            throw UnauthorizedAccessException("You are not authorized to delete this listing.")
         }
 
         listingRepository.delete(listing)
@@ -66,7 +68,7 @@ class ListingService(
     }
 
     fun searchListingsByFilters(
-        keywords: String,
+        keywords: String?,
         minPrice: Double?,
         maxPrice: Double?,
         category: String?,

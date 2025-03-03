@@ -48,7 +48,7 @@ class ListingSearchService(
     }
 
     fun searchListingsByFilters(
-        keywords: String,
+        keywords: String?,
         minPrice: Double?,
         maxPrice: Double?,
         category: String?,
@@ -56,10 +56,12 @@ class ListingSearchService(
         pageable: Pageable
     ): Page<ListingDocument> {
         val queryBuilder = NativeQuery.builder()
-            .withQuery { q ->
-                q.match { m -> m.field("title").query(keywords) }
-            }
             .apply {
+                if (keywords != null) {
+                    withQuery { q ->
+                        q.match { m -> m.field("title").query(keywords) }
+                    }
+                }
                 if (category != null) {
                     withQuery { q ->
                         q.term { t ->
