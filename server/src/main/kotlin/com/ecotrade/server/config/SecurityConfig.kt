@@ -20,6 +20,9 @@ class SecurityConfig(private val jwtFilter: JwtFilter) {
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
+            .headers {
+                it.frameOptions { options -> options.sameOrigin() }
+            }
             .csrf { it.disable() } // CSRF unnecessary as stateless JWT Auth is used
             .authorizeHttpRequests {
                 it.requestMatchers("/api/auth/**").permitAll()
