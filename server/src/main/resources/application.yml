@@ -10,3 +10,6 @@ spring:
     hibernate:
       ddl-auto: create
     show-sql: true
+springdoc:
+  api-docs:
+    path: /api-docs
