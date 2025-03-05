@@ -18,6 +18,14 @@ While I have experience with frontend development and have built decent applicat
 If you are interested in contributing to the frontend, feel free to contribute.
 (See [Contribution Guidelines](#contribution) below)
 
+## API Documentation
+
+For details on available API endpoints and interactive testing, check out the API Documentation locally:
+- Swagger UI: `/swagger-ui.html`
+- OpenAPI JSON/YAML: `/api-docs`
+
+For more information, see the [API Documentation Section](./server/README.md/#-api-documentation-with-openapi-swagger).
+
 ## Why This Tech Stack?
 
 - **Kotlin for Backend:** Chosen for its concise syntax, null safety, and rapid development capabilities.
