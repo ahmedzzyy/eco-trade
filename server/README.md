@@ -25,6 +25,15 @@ Note: *Production specific code are commented out as this is just a development 
    ./gradlew bootRun
    ```
 
+## 📖 API Documentation with OpenAPI (Swagger)
+
+This project includes **OpenAPI (Swagger)** integration to provide an interactive and comprehensive API documentation experience.
+
+- **Auto-generated API Docs** – Documentation is created dynamically.
+- **Interactive Swagger UI** – Test API endpoints visually at `/swagger-ui.html`.
+- **Detailed Endpoint Descriptions** – Includes request parameters, responses, and metadata.
+- **JSON/YAML API Docs** – Available at `/api-docs`.
+
 ## Key Features
 
 - **User Listings**: CRUD operations for marketplace listings
