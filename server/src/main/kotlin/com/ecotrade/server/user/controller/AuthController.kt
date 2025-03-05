@@ -3,15 +3,17 @@ package com.ecotrade.server.user.controller
 import com.ecotrade.server.security.JwtUtil
 import com.ecotrade.server.user.model.User
 import com.ecotrade.server.user.service.UserService
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestHeader
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/auth")
@@ -21,12 +23,28 @@ class AuthController(
     private val passwordEncoder: PasswordEncoder
 ) {
 
+    @Operation(summary = "Register a new user")
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "User registered successfully"),
+            ApiResponse(responseCode = "400", description = "Invalid user data")
+        ]
+    )
     @PostMapping("/register")
     fun registerUser(@RequestBody @Valid user: User): ResponseEntity<Void> {
         val registeredUser = userService.registerUser(user)
         return ResponseEntity.ok().build()
     }
 
+    @Operation(summary = "Authenticate user and return JWT tokens")
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "Login successful", content = [
+                Content(mediaType = "application/json")
+            ]),
+            ApiResponse(responseCode = "401", description = "Invalid credentials", content = [Content()])
+        ]
+    )
     @PostMapping("/login")
     fun login(@RequestBody loginRequest: LoginRequest): ResponseEntity<Map<String, String>> {
         val user = userService.findByEmail(loginRequest.email)
@@ -47,8 +65,21 @@ class AuthController(
         )
     }
 
+    @Operation(
+        summary = "Refresh the access token using a refresh token",
+        security = [SecurityRequirement(name = "BearerAuth")]
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "New access token generated", content = [
+                Content(mediaType = "application/json")
+            ]),
+            ApiResponse(responseCode = "401", description = "Invalid refresh token", content = [Content()])
+        ]
+    )
     @PostMapping("/refresh-token")
     fun refreshToken(
+        @Parameter(description = "Refresh token for generating a new access token")
         @RequestHeader("Authorization") refreshToken: String
     ): ResponseEntity<Map<String, String>> {
         val token = refreshToken.removePrefix("Bearer ")

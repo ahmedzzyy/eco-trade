@@ -11,6 +11,12 @@ import org.springframework.web.filter.OncePerRequestFilter
 @Component
 class JwtFilter(private val jwtUtil: JwtUtil) : OncePerRequestFilter() {
 
+    private val publicEndpoints = listOf(
+        "/api/auth/",
+        "/api-docs",
+        "/swagger-ui"
+    )
+
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
@@ -20,7 +26,7 @@ class JwtFilter(private val jwtUtil: JwtUtil) : OncePerRequestFilter() {
             val requestURI = request.requestURI
 
             // Skip JWT filter for public endpoints
-            if (requestURI.startsWith("/api/auth/")) {
+            if (isPublicEndpoint(requestURI)) {
                 filterChain.doFilter(request, response)
                 return
             }
@@ -55,6 +61,10 @@ class JwtFilter(private val jwtUtil: JwtUtil) : OncePerRequestFilter() {
         }
 
         filterChain.doFilter(request, response)
+    }
+
+    private fun isPublicEndpoint(requestURI: String): Boolean {
+        return publicEndpoints.any { requestURI.startsWith(it) }
     }
 
     fun getTokenFromRequest(request: HttpServletRequest): String? {
