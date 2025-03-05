@@ -25,7 +25,12 @@ class SecurityConfig(private val jwtFilter: JwtFilter) {
             }
             .csrf { it.disable() } // CSRF unnecessary as stateless JWT Auth is used
             .authorizeHttpRequests {
-                it.requestMatchers("/api/auth/**").permitAll()
+                it.requestMatchers(
+                    "/api/auth/**",
+                    "/api-docs/**",
+                    "/swagger-ui/**",
+                    "/swagger-ui.html"
+                ).permitAll()
                     .anyRequest().authenticated()
             }
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter::class.java)
